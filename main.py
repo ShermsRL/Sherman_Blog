@@ -115,7 +115,7 @@ def register():
     registration_form = RegisterForm()
     if request.method == "POST":
         new_user = User(name=registration_form.name.data,
-                        password=generate_password_hash(registration_form.password.data, "pbkdf2:sha256", 8)[7:],
+                        password=generate_password_hash(registration_form.password.data, "pbkdf2:sha256"[7:], 8),
                         email=registration_form.email.data)
         if User.query.filter_by(email=registration_form.email.data).first() != None:
             flash("You've already signed up with that email, login instead.")
@@ -137,7 +137,9 @@ def login():
         if user == None:
             flash("That email does not exist, please try again.")
             return render_template("login.html", form=login_form)
-        elif check_password_hash(login_form.password.data, user.password) == False:
+        elif check_password_hash(user.password, login_form.password.data) == False:
+            print(login_form.password.data)
+            print(user.password)
             flash("Password incorrect, please try again.")
             return render_template("login.html", form=login_form)
         else:
